@@ -2,11 +2,10 @@ package main
 
 import (
 	"github.com/gocolly/colly"
-	"github.com/gocolly/colly/debug"
 	log "github.com/sirupsen/logrus"
 )
 
-var url = "https://www.backmarket.de/"
+var url = "https://www.backmarket.de/ipad-air-3-gebraucht.html"
 
 func main()  {
 
@@ -17,15 +16,15 @@ func main()  {
 
 	var prices []price
 	c := colly.NewCollector(
-		colly.AllowedDomains("www.backmarket.de"),
-		colly.Debugger(&debug.LogDebugger{}))
+		colly.AllowedDomains("www.backmarket.de"), )
 
-	c.OnHTML("a", func(e *colly.HTMLElement) {
+	c.OnHTML(".price", func(e *colly.HTMLElement) {
 		p := price{
 			Price: e.Text,
 			Link:  "wip",
 		}
 		prices = append(prices, p)
+		log.Info(p)
 	})
 
 
@@ -35,7 +34,7 @@ func main()  {
 	
 
 	c.OnRequest(func(request *colly.Request) {
-		log.Infof("Visiting %v", request)
+		log.Infof("Visiting %v", request.URL)
 	})
 
 	err := c.Visit(url)
@@ -44,7 +43,6 @@ func main()  {
 	}
 	c.Wait()
 
-	log.Info(c.AllowedDomains)
 
 
 }
